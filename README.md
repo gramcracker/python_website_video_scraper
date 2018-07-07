@@ -1,6 +1,6 @@
 # wco_streamer
-This is a program I created in order to stream shows from watchcartoonsonline.com.
-At it's current stage it doesn't have any controls, and will only play one episode when run.
+This is a program I created in order to stream a randomized list of episodes given a predefined list of show titles picked from watchcartoonsonline.com through the VLC media player.
+At it's current stage, the player doesn't have any controls, and will only play one episode when run, but the goal is to have it play continuously for a specified amount of time.
 
 ## How it works
 It takes a specified list of show titles and pics a random episode from a random title in the
