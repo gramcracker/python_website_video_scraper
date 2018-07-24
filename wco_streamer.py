@@ -15,29 +15,7 @@ from gi.repository import Gtk
 Gdk.threads_init ()
 
 
-show_titles = [
-	'clarence',
-	'the-powerpuff-girls-2016',
-	'adventure-time',
-	'sesame-street-season-46',
-	'invader-zim',
-	'fosters-home-for-imaginary-friends',
-	'dexters-laboratory',
-	'steven-universe',
-	'the-grim-adventures-of-billy-and-mandy',
-	'chowder',
-	'yo-gabba-gabba',
-	'wallykazam',
-	'animaniacs',
-	'team-umizoomi',
-	'tumble-leaf',
-	'trolls-the-beat-goes-on',
-	'my-little-pony-friendship-is-magic',
-	'vampirina',
-	'harvey-beaks',
-	'gravity-falls',
-	'unikitty',
-	'craig-of-the-creek']
+show_titles = ['']
 
 
 base_url = 'https://www.watchcartoononline.com/anime/'
@@ -69,9 +47,12 @@ class ApplicationWindow(Gtk.Window):
 		self.player_paused=False
 		self.is_player_active = False
 		self.connect("destroy",Gtk.main_quit)
+		self.isFullscreen = False
+		self.volume = 100
 
 	def show(self):
 		self.show_all()
+
 
 	def setup_objects_and_events(self):
 		self.connect("key-press-event",self._key_press_event)
@@ -143,15 +124,29 @@ class ApplicationWindow(Gtk.Window):
 
 	def _key_press_event(self,widget,event):
 		keyval = event.keyval
-		keyval_name = gtk.gdk.keyval_name(keyval)
+		keyval_name = Gdk.keyval_name(keyval)
 		state = event.state
 		print(keyval_name)
-		if  keyval_name == 'Enter':
-			self.toggle_player_playback()
-		elif ctrl and keyval_name == 'Space':
-			self.update()
+		if  keyval_name == 'space':
+			self.toggle_player_playback(self)
+		elif keyval_name == 'Tab':
+			self.update(self)
+		elif keyval_name == "s":
+			self.stop_player(self)
 		elif keyval_name == "Escape":
-			self.stop_player(zse)
+			self.destroy()
+		elif keyval_name == "f":
+			self.toggle_fullscreen(self)
+		elif keyval_name == "Up":
+			if self.volume < 100:
+				self.volume +=1
+				print(self.volume)
+				self.player.audio_set_volume(self.volume)
+		elif keyval_name == "Down":
+			if self.volume > 0:
+				self.volume -=1
+				print(self.volume)
+				self.player.audio_set_volume(self.volume)
 		else:
 			return False
 		return True
@@ -161,18 +156,21 @@ class ApplicationWindow(Gtk.Window):
 		self.src = get_src_of_rand_video()
 		self.set_my_media(self.player, self.vlcInstance, self.src)
 		self.player.play()
-		
-		self.fs_player.play()
 
-	# def toggle_fullscreen(self, widget, data=None):
-	# 	if self.fullscreen == True:
-	# 		self.fullscreen = False
-	# 		self.toggle_player_playback()
-	# 	else: 
-	# 		self.fullscreen = True
-	# 		self.toggle_player_playback(self)
-	# 		self.open_fullscreen_player(self)
-
+	def toggle_fullscreen(self, widget, data=None):
+		if self.isFullscreen == True:
+			self.isFullscreen = False
+			self.hbox.show()
+			self.set_decorated(True)
+			self.unmaximize()
+			self.unfullscreen()
+			
+		elif self.isFullscreen == False: 
+			self.isFullscreen = True
+			self.set_decorated(False)
+			self.hbox.hide()
+			self.maximize()
+			self.fullscreen()
 
 	def stop_player(self, widget, data=None):
 		self.player.stop()
@@ -193,9 +191,8 @@ class ApplicationWindow(Gtk.Window):
 		self.src = get_src_of_rand_video()
 
 		self.player = self.vlcInstance.media_player_new()
-		# uncomment to use vlc in window
-		# win_id = widget.get_window().get_xid()
-		# self.player.set_xwindow(win_id)
+		win_id = widget.get_window().get_xid()
+		self.player.set_xwindow(win_id)
 		self.player.set_fullscreen(True)
 		self.player = self.set_my_media(self.player, self.vlcInstance, self.src)
 		self.player.play()
@@ -220,13 +217,3 @@ def end_reached(self):
     set_my_media(Instance, player, src)
     player.play()
     
-# event_manager = player.event_manager() # Attach event to player
-# event=vlc.EventType()
-# event_manager.event_attach(event.MediaPlayerEndReached, end_reached)
-
-# src = get_src_of_rand_video()
-# set_my_media(Instance, player, src)
-# player.set_fullscreen(isFullscreen)
-# player.play()
-# while True:
-#      pass
