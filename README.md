@@ -6,7 +6,7 @@ This is a program I created in order to stream a randomized list of episodes giv
 At it's current stage, the player doesn't have any controls, and will only play one episode when run.
 
 ## How it works
-It takes a specified list of show titles and pics a random episode from a random title in the
+It takes a specified list of show titles and picks a random episode from a random title in the
 list, then streams the episode from the website through vlc.
 
 ## Installing
